@@ -29,10 +29,10 @@ app.post('/api/rdv',function (req,res){
 });
 
 //Ajouter rdv dans liste Participe
-app.post('/api/listeParticipe/:id',function (req,res){
+app.post('/api/listeParticipe',function (req,res){
     //métier
     var id = req.params.id;
-    var objres = metier.ajouterDansListeParticipe(id);
+    var objres = metier.ajouterDansListeParticipe();
     //forger resultat
     if ((typeof objres === 'undefined') || (typeof objres === {}))
     {
@@ -42,7 +42,7 @@ app.post('/api/listeParticipe/:id',function (req,res){
 
 //Lister listeParticipe
 app.get('/api/listeParticipe',function (req,res){
-    res.status(200).json(metier.getlisteParticipe());
+    res.status(200).json(metier.recupererListeParticipe());
 });
 
 //Lister Rdv
@@ -109,14 +109,12 @@ app.post('/api/rdv/:id/ajouterCreneau', function (req, res) {
 });
 
 //Ajouter Pers
-app.post('/api/pers/:id',function (req,res){
+app.post('/api/pers/',function (req,res){
 
     //récupérer paramètres
     var Pers = req.body;
-
-
     //métier
-    var obj = metier.ajouterP(Pers);
+    var obj = metier.ajouterPers(Pers);
     console.log(obj);
 
     //forger resultat

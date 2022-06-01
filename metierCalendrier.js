@@ -4,7 +4,10 @@ let liste = [];
 let listeP =[];
 let idRdv=0;
 let idCreneau=0;
+let listParticipe=[];
+let idPers=0;
 
+//constructeur de rdv permet de definir les attributs necessaires pour creer un rendez vous
 function Rdv(id,titre,description){
     this.id =id;
     this.titre =titre;
@@ -24,7 +27,7 @@ function Personne(id,nom,prenom){
     this.id =id;
     this.nom =nom;
     this.prenom = prenom;
-    this.listeParticipe=[];
+    this.listParticipe=[];
 }
 
 //constructeur avec structure
@@ -32,33 +35,23 @@ function Personne(personne){
     this.id =personne.id;
     this.nom =personne.nom;
     this.prenom = personne.prenom;
-    this.listeParticipe=[];
+    this.listParticipe=[];
 
 }
-
-var ajouterDansListeParticipe = function (idRdv) {
-    let tmprdv = liste;
-    let i=0;
-    while(tmprdv[idRdv].listeCreneaux[i].numOK<=0)
-    {
-        i++;
-    }
-    //On ajoute à notre listeParticipe le nouveau theme
-    listeParticipe[idProfil].push(tmprdv[idRdv]);
-    idPers++;
-    return listeParticipe[idPers - 1]
+//fonction qui permet d'ajouter un rdv dans la listeParticipe
+//liste => correspond a la liste des rdv
+//listeParticipe => correspond a la liste des rdv pour lequel le profil participe
+var ajouterDansListeParticipe = function () {
+    for(let i=0;i<liste.length;i++)
+    listParticipe[i]=liste[i];
+    return listParticipe;
 }
+
 //Methode Metier
-//Ajout
-var ajouter = function (rdv) {
-    //On ajoute à notre liste le nouveau theme
-    liste[idRdv] = new Rdv(rdv);
-    liste[idRdv].id = idRdv;
-    idRdv++;
-    return liste[idRdv - 1]
-}
-
 // Pour ajouter un creneau
+//tmpCreneau => correspond au creneau temporaire creer pour inserer les données voulues
+//liste => correspond a la liste des rdv
+//liste[i].listeCreneau => correspond a la liste des creneaux d'un
 var ajouterCreneau = function (id, creneau){
     let tmpcreneau = creneau;
     //On force l'id en fonction du back
@@ -70,6 +63,7 @@ var ajouterCreneau = function (id, creneau){
     return liste[id].listeCreneaux[idCreneau-1];
 }
 
+//fonction qui permet de recuperer un creneau de la liste.listeCreneau
 var getListeCreneaux = function(id)
 {
     //Si liste est undefined, on retourne {}
@@ -86,22 +80,25 @@ var getRdv = function (id) {
     else return liste[id];
 }
 
-//get listeParticipe
-var getlisteParticipe = function () {
-    return Object.values(listeParticipe);
+//get listeParticipe permet de recuperer la listeParticipe
+var recupererListeParticipe = function () {
+    return Object.values(listParticipe);
 }
 
-// Lister les Rdv
+// Lister les Rdv permet de recuperer les objets preésents dans la liste
 var lister = function () {
     return Object.values(liste);
 }
 
-//lister personne
+//lister personne permet de recuperer les objets presents dans la listePers
 var listerP = function () {
     return Object.values(listeP);
 }
 
 // Pour trouver la place d'un creneau dans liste rendez-vous
+//pos = position du creneau
+//liste => correspond a la liste de rdv
+//liste[i].listeCreneaux => correspond a la liste des creneaux d'un rdv
 var getPositionCreneau = function (idRDV,idCreneau){
     let pos = -1;
     for(let i =0; i < liste[idRDV].listeCreneaux.length; i++){
@@ -113,6 +110,12 @@ var getPositionCreneau = function (idRDV,idCreneau){
     }
     return pos;
 }
+//fonction qui permet de cloturer un rdv ce qui bloque le creneau qui possede le plus de ok des participants
+//this.isCloturer => permet de savoir si le bouton a ete clique
+//nbOKMAX => correspond au nombreMax de personne ayant vote pour un creneau d'un rdv
+//positionNBokMAX => correspond a la position dans la liste du creneau qui possede le plus de ok d'un rdv
+//listeCloturer => correspond a la nouvelle liste qui possedera que le creneau qui possede le plus de ok
+//this.detail.listeCreneaux => correspond a la liste du creneau
 var cloturerRDV = function (idRDV)
 {
     let nbOKMAX=0;
@@ -132,17 +135,40 @@ var cloturerRDV = function (idRDV)
     //ajout de cette liste dans la liste du rdv
     liste[idRDV].listeCreneaux=listeCloturer;
 }
-
+//fonction qui permet d'ajouter un + au bouton ok
+//this.detail => correspond au rdv
+//this.detail.listeCreneaux => liste des creneaux du rdv
+//positionCreneau => correspond au creneau pour lequel on vas ajouter un + au bouton ok
 var ajouterOK = function (idRdv, idCreneau) {
     let pos = getPositionCreneau(idRdv,idCreneau);
     liste[idRdv].listeCreneaux[pos].numOK++;
 }
-
+//fonction qui permet d'ajouter un + au bouton ko
+//this.detail => correspond au rdv
+//this.detail.listeCreneaux => liste des creneaux du rdv
+//positionCreneau => correspond au creneau pour lequel on vas ajouter un + au bouton ko
 var ajouterKO = function (idRdv, idCreneau) {
     let pos = getPositionCreneau(idRdv,idCreneau);
     liste[idRdv].listeCreneaux[pos].numKO++;
 }
-
+//Ajout personne
+//listeP => correspond a la liste des personnes
+var ajouterPers = function(personne) {
+    //On ajoute à notre liste une personne
+    listeP[idPers] = new Personne(personne);
+    listeP[idPers].id = idPers;
+    idPers++;
+    return listeP[idPers-1]
+}
+//Ajout rdv
+//lsite => correspond a la liste des rdv
+var ajouter = function (rdv) {
+    //On ajoute à notre liste le nouveau theme
+    liste[idRdv] = new Rdv(rdv);
+    liste[idRdv].id = idRdv;
+    idRdv++;
+    return liste[idRdv - 1]
+}
 exports.ajouter = ajouter;
 exports.getRdv = getRdv;
 exports.lister = lister;
@@ -153,4 +179,5 @@ exports.ajouterOK = ajouterOK;
 exports.ajouterKO = ajouterKO;
 exports.cloturerRDV = cloturerRDV;
 exports.ajouterDansListeParticipe=ajouterDansListeParticipe;
-exports.getlisteParticipe=getlisteParticipe;
+exports.recupererListeParticipe=recupererListeParticipe;
+exports.ajouterPers = ajouterPers;
